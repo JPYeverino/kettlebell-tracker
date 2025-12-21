@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
     <title>KB Tracker</title>
+    <script>
+      // Restore path from 404 redirect for GitHub Pages SPA
+      (function() {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect.split(window.location.origin)[1]);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="app"></div>
