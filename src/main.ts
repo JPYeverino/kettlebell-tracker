@@ -15,7 +15,7 @@ let currentPage: Page = 'programs';
 const app = document.getElementById('app')!;
 
 // Check if we're on the public display route
-const isDisplayRoute = window.location.pathname === '/display';
+const isDisplayRoute = window.location.pathname.endsWith('/display');
 
 if (isDisplayRoute) {
   // Render public display view (no auth required)
