@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/kettlebell-tracker/', // GitHub Pages repository path
+  base: '/', // Using custom domain (fitness.pabloyeverino.dev)
   build: {
     target: 'es2020',
   },
