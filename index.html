@@ -10,8 +10,12 @@
       (function() {
         var redirect = sessionStorage.redirect;
         delete sessionStorage.redirect;
-        if (redirect && redirect !== location.href) {
-          history.replaceState(null, null, redirect.split(window.location.origin)[1]);
+        if (redirect && redirect !== '/') {
+          // Get current base path
+          var pathSegments = location.pathname.split('/').filter(function(s) { return s; });
+          var base = pathSegments.length > 0 ? '/' + pathSegments[0] : '';
+          // Restore the route
+          history.replaceState(null, null, base + redirect);
         }
       })();
     </script>

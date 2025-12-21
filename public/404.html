@@ -5,11 +5,23 @@
     <title>KB Tracker</title>
     <script>
       // Single Page Apps for GitHub Pages
-      // https://github.com/rafgraph/spa-github-pages
-      // Store the path in sessionStorage and redirect to root
-      sessionStorage.redirect = location.href;
+      // Store the full path and redirect to base
+      var pathSegments = location.pathname.split('/').filter(function(segment) {
+        return segment;
+      });
+
+      // Get the base path (e.g., /kettlebell-tracker/)
+      var base = '/' + pathSegments[0] + '/';
+
+      // Get the route (everything after base)
+      var route = '/' + pathSegments.slice(1).join('/');
+
+      // Store just the route part
+      sessionStorage.redirect = route;
+
+      // Redirect to base
+      location.replace(base);
     </script>
-    <meta http-equiv="refresh" content="0;URL='/'">
   </head>
   <body>
   </body>
