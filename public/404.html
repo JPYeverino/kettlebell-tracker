@@ -4,23 +4,10 @@
     <meta charset="utf-8">
     <title>KB Tracker</title>
     <script>
-      // Single Page Apps for GitHub Pages
-      // Store the full path and redirect to base
-      var pathSegments = location.pathname.split('/').filter(function(segment) {
-        return segment;
-      });
-
-      // Get the base path (e.g., /kettlebell-tracker/)
-      var base = '/' + pathSegments[0] + '/';
-
-      // Get the route (everything after base)
-      var route = '/' + pathSegments.slice(1).join('/');
-
-      // Store just the route part
-      sessionStorage.redirect = route;
-
-      // Redirect to base
-      location.replace(base);
+      // Single Page Apps for GitHub Pages with custom domain
+      // Store the path and redirect to root
+      sessionStorage.redirect = location.pathname;
+      location.replace('/');
     </script>
   </head>
   <body>
