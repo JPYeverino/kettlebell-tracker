@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { WorkoutType, WorkoutPlanWithWorkouts, PlannedWorkout } from '../types';
-import { formatWeekStart, formatWeekRange, addWeeks, isCurrentWeek } from '../lib/weekUtils';
+import { formatWeekStart, formatWeekRange, addWeeks, isCurrentWeek, getDateForDayOfWeek, formatShortDate } from '../lib/weekUtils';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -192,10 +192,14 @@ function render(container: HTMLElement) {
           const today = new Date().getDay();
           const isToday = isCurrent && dayOfWeek === today;
 
+          // Calculate actual date for this day
+          const actualDate = getDateForDayOfWeek(currentWeekStart, dayOfWeek);
+          const dateStr = formatShortDate(actualDate);
+
           return `
             <div class="day-card ${isToday ? 'day-today' : ''}">
               <div class="day-header">
-                <strong>${day}</strong>
+                <strong>${day} - ${dateStr}</strong>
                 ${editing ? `<button class="btn-add-workout" data-day="${dayOfWeek}">+</button>` : ''}
               </div>
 

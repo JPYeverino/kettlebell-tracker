@@ -42,3 +42,22 @@ export function isCurrentWeek(weekStart: Date): boolean {
   const week = formatWeekStart(weekStart);
   return today === week;
 }
+
+// Get the actual date for a specific day of the week
+// dayOfWeek: 1=Mon, 2=Tue, ..., 6=Sat, 0=Sun
+export function getDateForDayOfWeek(weekStart: Date, dayOfWeek: number): Date {
+  const date = new Date(getWeekStart(weekStart));
+
+  // If it's Sunday (0), add 6 days, otherwise add (dayOfWeek - 1)
+  const daysToAdd = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  date.setDate(date.getDate() + daysToAdd);
+
+  return date;
+}
+
+// Format a date as MM/DD (e.g., "12/23")
+export function formatShortDate(date: Date): string {
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${month}/${day}`;
+}
