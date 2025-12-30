@@ -2,6 +2,18 @@ import { supabase } from './supabase';
 import type { AdminAuditLog } from '../types';
 
 /**
+ * Admin User Management
+ */
+
+const ADMIN_USER_IDS = [
+  '187bfbe5-4349-4c15-afb7-c1ebd5ff1a9e', // Pablo
+];
+
+export function isAdmin(userId: string): boolean {
+  return ADMIN_USER_IDS.includes(userId);
+}
+
+/**
  * PII Masking Functions
  */
 

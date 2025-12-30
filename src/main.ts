@@ -6,6 +6,7 @@ import { renderPlanner } from './pages/planner';
 import { renderProgress } from './pages/progress';
 import { renderDisplay } from './pages/display';
 import { renderAdmin } from './pages/admin';
+import { isAdmin } from './lib/admin-utils';
 import type { User } from '@supabase/supabase-js';
 
 type Page = 'programs' | 'planner' | 'progress' | 'admin';
@@ -49,7 +50,14 @@ function render() {
     if (isDisplayRoute) {
       renderDisplay(app, currentUser);
     } else if (isAdminRoute) {
-      renderAdmin(app, currentUser);
+      // Only allow admin users to access admin route
+      if (isAdmin(currentUser.id)) {
+        renderAdmin(app, currentUser);
+      } else {
+        // Redirect non-admins to main app
+        window.history.pushState({}, '', '/');
+        renderApp();
+      }
     } else {
       renderApp();
     }
@@ -68,7 +76,9 @@ function renderApp() {
         <button id="nav-programs" class="nav-btn ${currentPage === 'programs' ? 'active' : ''}">Programs</button>
         <button id="nav-planner" class="nav-btn ${currentPage === 'planner' ? 'active' : ''}">Planner</button>
         <button id="nav-progress" class="nav-btn ${currentPage === 'progress' ? 'active' : ''}">Progress</button>
-        <button id="nav-admin" class="nav-btn ${currentPage === 'admin' ? 'active' : ''}">Admin</button>
+        ${currentUser && isAdmin(currentUser.id) ? `
+          <button id="nav-admin" class="nav-btn ${currentPage === 'admin' ? 'active' : ''}">Admin</button>
+        ` : ''}
       </nav>
       <main class="main" id="page-content"></main>
     </div>
@@ -79,7 +89,12 @@ function renderApp() {
   document.getElementById('nav-programs')!.addEventListener('click', () => navigateTo('programs'));
   document.getElementById('nav-planner')!.addEventListener('click', () => navigateTo('planner'));
   document.getElementById('nav-progress')!.addEventListener('click', () => navigateTo('progress'));
-  document.getElementById('nav-admin')!.addEventListener('click', () => navigateTo('admin'));
+
+  // Admin nav only exists if user is admin
+  const adminBtn = document.getElementById('nav-admin');
+  if (adminBtn) {
+    adminBtn.addEventListener('click', () => navigateTo('admin'));
+  }
 
   // Render current page
   const content = document.getElementById('page-content')!;
