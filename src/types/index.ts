@@ -68,3 +68,25 @@ export interface RPELevel {
   label: string;
   description: string;
 }
+
+// Pilot invite codes
+export interface PilotInvite {
+  code: string;
+  used: boolean;
+  used_by: string | null;
+  used_at: string | null;
+  created_at: string;
+}
+
+// Admin audit logging
+export interface AdminAuditLog {
+  id: string;
+  admin_user_id: string | null;
+  action: string;
+  target_user_id: string | null;
+  table_name: string | null;
+  details: Record<string, unknown> | null;
+  reason: string | null;
+  ip_address: string | null;
+  created_at: string;
+}

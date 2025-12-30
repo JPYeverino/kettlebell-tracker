@@ -1063,3 +1063,189 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     font-size: 1.125rem;
   }
 }
+
+
+/* =============================================
+   ADMIN DASHBOARD STYLES
+   ============================================= */
+
+.admin-dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-header {
+  margin-bottom: 2rem;
+}
+
+.admin-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  color: #888;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-section {
+  margin-bottom: 3rem;
+}
+
+.admin-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  color: #888;
+  margin-bottom: 1.5rem;
+}
+
+.invite-table {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 2fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: #111;
+  border-bottom: 1px solid #333;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 2fr;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #222;
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.row-used {
+  opacity: 0.6;
+}
+
+.row-available {
+  background: linear-gradient(90deg, transparent, rgba(136, 255, 136, 0.03), transparent);
+}
+
+.code-cell code {
+  background: #222;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: #88ff88;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-used {
+  background: #2e1a1a;
+  color: #ff8888;
+}
+
+.badge-available {
+  background: #1a2e1a;
+  color: #88ff88;
+}
+
+.user-cell {
+  font-family: 'Courier New', monospace;
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.date-cell {
+  color: #888;
+  font-size: 0.875rem;
+}
+
+.info-box {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-left: 4px solid #88ccff;
+  border-radius: 4px;
+  padding: 1.5rem;
+  line-height: 1.6;
+  color: #ccc;
+}
+
+.info-box strong {
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1rem;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .table-row > div::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    color: #888;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+  }
+}
+
