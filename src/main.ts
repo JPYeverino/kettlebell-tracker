@@ -14,25 +14,19 @@ let currentPage: Page = 'programs';
 
 const app = document.getElementById('app')!;
 
-// Check if we're on the public display route
+// Check if we're on the display route
 const isDisplayRoute = window.location.pathname.endsWith('/display');
 
-if (isDisplayRoute) {
-  // Render public display view (no auth required)
-  renderDisplay(app);
-} else {
-  // Normal app with auth
-  // Auth state management
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    currentUser = session?.user ?? null;
-    render();
-  });
+// Auth state management (required for all routes now)
+supabase.auth.getSession().then(({ data: { session } }) => {
+  currentUser = session?.user ?? null;
+  render();
+});
 
-  supabase.auth.onAuthStateChange((_event, session) => {
-    currentUser = session?.user ?? null;
-    render();
-  });
-}
+supabase.auth.onAuthStateChange((_event, session) => {
+  currentUser = session?.user ?? null;
+  render();
+});
 
 // Navigation
 export function navigateTo(page: Page) {
@@ -49,7 +43,12 @@ function render() {
   if (!currentUser) {
     renderAuth(app);
   } else {
-    renderApp();
+    // Check if user wants display view
+    if (isDisplayRoute) {
+      renderDisplay(app, currentUser);
+    } else {
+      renderApp();
+    }
   }
 }
 

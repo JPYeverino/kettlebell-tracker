@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { PlannedWorkout } from '../types';
+import type { User } from '@supabase/supabase-js';
 import { formatWeekStart } from '../lib/weekUtils';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -15,8 +16,10 @@ const WORKOUT_OPTIONS: { [key: string]: string } = {
 };
 
 let workouts: PlannedWorkout[] = [];
+let currentUser: User | null = null;
 
-export function renderDisplay(container: HTMLElement) {
+export function renderDisplay(container: HTMLElement, user: User) {
+  currentUser = user;
   loadPlan().then(() => render(container));
 
   // Auto-refresh every 5 minutes
@@ -26,12 +29,15 @@ export function renderDisplay(container: HTMLElement) {
 }
 
 async function loadPlan() {
+  if (!currentUser) return;
+
   const currentWeek = formatWeekStart(new Date());
 
-  // Get active plan and workouts for current week
+  // Get active plan for this user
   const { data: plans } = await supabase
     .from('workout_plans')
     .select('id')
+    .eq('user_id', currentUser.id)
     .eq('is_active', true)
     .limit(1);
 
