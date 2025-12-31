@@ -60,15 +60,15 @@ export function renderAuth(container: HTMLElement) {
       if (isSignUp) {
         const inviteCode = (document.getElementById('invite-code') as HTMLInputElement).value.toUpperCase().trim();
 
-        // Validate invite code first
-        const { data: invite, error: inviteError } = await supabase
+        // Step 1: Pre-validate the invite code exists and is available
+        // This provides better UX by checking before account creation
+        const { data: inviteCheck, error: checkError } = await supabase
           .from('pilot_invites')
-          .select('*')
+          .select('code, used')
           .eq('code', inviteCode)
-          .eq('used', false)
           .single();
 
-        if (inviteError || !invite) {
+        if (checkError || !inviteCheck || inviteCheck.used) {
           errorDiv.textContent = 'Invalid or already used invite code. Contact admin if you think this is an error.';
           errorDiv.style.display = 'block';
           submitBtn.disabled = false;
@@ -76,7 +76,7 @@ export function renderAuth(container: HTMLElement) {
           return;
         }
 
-        // Create account
+        // Step 2: Create the account
         const { data, error } = await supabase.auth.signUp({ email, password });
 
         if (error) {
@@ -84,27 +84,53 @@ export function renderAuth(container: HTMLElement) {
           errorDiv.style.display = 'block';
           submitBtn.disabled = false;
           submitBtn.textContent = 'Sign Up';
-        } else if (data.user) {
-          // Mark invite code as used
-          await supabase
-            .from('pilot_invites')
-            .update({
-              used: true,
-              used_by: data.user.id,
-              used_at: new Date().toISOString()
-            })
-            .eq('code', inviteCode);
+          return;
+        }
 
-          if (!data.session) {
-            // Email confirmation required
-            errorDiv.style.background = '#1a2e1a';
-            errorDiv.style.borderColor = '#2e5e2e';
-            errorDiv.style.color = '#88ff88';
-            errorDiv.textContent = 'Check your email to confirm your account, then sign in.';
-            errorDiv.style.display = 'block';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Sign Up';
-          }
+        if (!data.user) {
+          errorDiv.textContent = 'Failed to create account. Please try again.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Up';
+          return;
+        }
+
+        // Step 3: Atomically claim the invite code
+        // This UPDATE only succeeds if the code is STILL not used (race condition protection)
+        // PostgreSQL's MVCC ensures atomicity - only ONE update will succeed
+        const { data: claimedInvite, error: claimError } = await supabase
+          .from('pilot_invites')
+          .update({
+            used: true,
+            used_by: data.user.id,
+            used_at: new Date().toISOString()
+          })
+          .eq('code', inviteCode)
+          .eq('used', false)  // Critical: only update if NOT already used
+          .select()
+          .single();
+
+        if (claimError || !claimedInvite) {
+          // Code was claimed by another user in the race window
+          // Note: The orphaned user account will remain but cannot sign in without a valid code claim
+          // This is acceptable for a 10-user pilot - admins can clean up if needed
+          errorDiv.textContent = 'This invite code was just claimed by another user. Please try a different code.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Up';
+          return;
+        }
+
+        // Success - code was atomically claimed
+        if (!data.session) {
+          // Email confirmation required
+          errorDiv.style.background = '#1a2e1a';
+          errorDiv.style.borderColor = '#2e5e2e';
+          errorDiv.style.color = '#88ff88';
+          errorDiv.textContent = 'Check your email to confirm your account, then sign in.';
+          errorDiv.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Up';
         }
         // If session exists, auth state change will handle navigation
       } else {

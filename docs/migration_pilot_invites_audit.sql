@@ -26,6 +26,10 @@ INSERT INTO pilot_invites (code) VALUES
   ('PILOT-KB-09'),
   ('PILOT-KB-10');
 
+-- Add unique constraint to prevent race conditions
+-- This ensures only ONE user can claim each code at the database level
+CREATE UNIQUE INDEX unique_code_usage ON pilot_invites(code) WHERE used = true;
+
 -- RLS policies for pilot_invites
 ALTER TABLE pilot_invites ENABLE ROW LEVEL SECURITY;
 
@@ -34,8 +38,11 @@ CREATE POLICY "Anyone can check invite codes" ON pilot_invites
   FOR SELECT USING (true);
 
 -- Allow updating when using a code (mark as used)
+-- The USING clause checks current state, WITH CHECK validates the new state
 CREATE POLICY "Anyone can use invite codes" ON pilot_invites
-  FOR UPDATE USING (NOT used);
+  FOR UPDATE
+  USING (NOT used)
+  WITH CHECK (used = true);
 
 -- =============================================
 -- 2. ADMIN AUDIT LOG TABLE
